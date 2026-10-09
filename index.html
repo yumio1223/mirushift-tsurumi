@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Maru+Gothic:wght@700&display=swap">
+<style>
+:root{
+  --ground:#F4F2ED; --surface:#FFFFFF; --ink:#23221F; --sub:#5B574F; --line:#DAD4C8;
+  --accent:#1F5F5B; --accent-soft:#E4EEEB;
+  --off:#F4CCCC; --off-line:#C9776F; --off-ink:#7A1F1A;
+  --yu:#E7DBEF; --yu-line:#9C82B5; --yu-ink:#4B2E63;
+  --red:#B3261E; --red-soft:#FBE3E1; --amber-soft:#F8EACB;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--ground);color:var(--ink);font-family:'Zen Kaku Gothic New','Hiragino Sans','Yu Gothic',sans-serif;font-size:18px;-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+button{font-family:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible{outline:3px solid #7FB3AE;outline-offset:2px}
+h1{margin:0}
+.scr{height:100vh;display:flex;flex-direction:column;padding:20px 26px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.title{font-family:'Zen Maru Gothic','Zen Kaku Gothic New',sans-serif;font-size:30px}
+.sub{color:var(--sub);font-size:16px;line-height:1.6}
+.sub b{color:var(--ink)}
+.btn{min-height:56px;padding:0 26px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:18px;font-weight:700}
+.btn:active{background:#EFEBE3}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:active{background:#184D4A}
+.btn.big{min-height:68px;font-size:22px}
+.btn.quiet{min-height:44px;font-size:15px;padding:0 16px}
+.banner{padding:14px 18px;border-radius:12px;background:var(--amber-soft);line-height:1.7;margin-bottom:14px}
+.banner.red{background:var(--red-soft);color:#8C1D18}
+
+/* 名前 */
+.names{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;overflow-y:auto;padding-bottom:10px;align-content:start}
+.nb{min-height:86px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:22px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 8px;overflow:hidden}
+.nb:active{background:var(--accent-soft)}
+.nb span{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nb small{font-size:13px;font-weight:700;padding:2px 10px;border-radius:8px}
+.nb small.ok{background:#E3EFE5;color:#23532F}
+.nb small.ex{background:var(--amber-soft);color:#5C4300}
+.foot{margin-top:auto;display:flex;justify-content:flex-end;padding-top:8px}
+
+/* 番号 */
+.pinwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.dots{display:flex;gap:20px}
+.dot{width:26px;height:26px;border-radius:99px;border:3px solid var(--ink)}
+.dot.on{background:var(--ink)}
+.err{color:var(--red);font-weight:700;min-height:28px;text-align:center}
+.keys{display:grid;grid-template-columns:repeat(3,112px);gap:12px}
+.key{height:80px;border-radius:16px;border:1px solid var(--line);background:var(--surface);font-size:32px;font-weight:700}
+.key:active{background:var(--accent-soft)}
+.key.small{font-size:16px;color:var(--sub)}
+
+/* カレンダー */
+.calwrap{flex:1;min-height:0;display:flex;gap:18px}
+.cal{flex:1;min-width:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.wd{text-align:center;font-weight:700;font-size:16px;align-self:end}
+.day{border-radius:12px;border:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:60px;padding:0}
+.day:active{background:#EFEBE3}
+.day .dn{font-size:26px;font-weight:700;line-height:1.1}
+.day .dn.mo{font-size:20px}
+.day small{font-size:13px;font-weight:700;color:var(--sub)}
+.day.sun .dn{color:var(--red)}
+.day.sat .dn{color:#1F4E8C}
+.day.off{background:var(--off);border:2px solid var(--off-line)}
+.day.yu{background:var(--yu);border:2px solid var(--yu-line)}
+.day.off .dn,.day.off small{color:var(--off-ink)}
+.day.yu .dn,.day.yu small{color:var(--yu-ink)}
+.day.ro{cursor:default}
+.day.ro:active{background:var(--surface)}
+.day.blank{background:transparent;border:none}
+.side{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:12px;min-height:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.mode{display:flex;gap:10px}
+.mode button{flex:1;min-height:64px;border-radius:14px;border:3px solid transparent;font-size:22px;font-weight:700}
+.mode .m-off{background:var(--off);color:var(--off-ink)}
+.mode .m-yu{background:var(--yu);color:var(--yu-ink)}
+.mode button.on{border-color:var(--ink)}
+.picked{flex:1;min-height:0;overflow-y:auto;font-size:17px;line-height:2}
+.picked .pr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EEE9E0}
+.tag{padding:2px 12px;border-radius:9px;font-size:16px;font-weight:700}
+.tag.off{background:var(--off);color:var(--off-ink)}
+.tag.yu{background:var(--yu);color:var(--yu-ink)}
+
+/* 確認 */
+.conf{flex:1;min-height:0;overflow-y:auto;max-width:720px;width:100%;margin:0 auto;padding:0}
+.crow{display:flex;justify-content:space-between;align-items:center;padding:14px 22px;border-bottom:1px solid #EEE9E0;font-size:22px;font-weight:700}
+.crow:last-child{border-bottom:none}
+.crow .tag{font-size:19px;padding:4px 16px}
+.bar{display:flex;gap:16px;justify-content:center;padding-top:16px}
+
+/* 送りました */
+.done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+.done .mark{width:110px;height:110px;border-radius:999px;background:var(--accent);color:#fff;font-size:60px;display:flex;align-items:center;justify-content:center}
+.done .title{font-size:36px}
+
+@media (orientation:portrait){
+  .names{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .calwrap{flex-direction:column}
+  .side{width:auto;flex-direction:row;flex-wrap:wrap}
+  .side .panel{flex:1;min-width:240px}
+  .picked{max-height:160px}
+}
+
+#loading{position:fixed;inset:0;background:rgba(244,242,237,.75);display:none;align-items:center;justify-content:center;z-index:50;flex-direction:column;gap:14px;font-weight:700;font-size:20px}
+#loading.on{display:flex}
+.spin{width:40px;height:40px;border-radius:999px;border:4px solid #CFC9BE;border-top-color:var(--accent);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="loading"><div class="spin"></div><div>少しお待ちください…</div></div>
+
+<script>
+var INIT=null, who='', pin='', V=null, sel={}, mode='休', scr='names', pinErr='', msg='', sentAt='', busy=false, idleT=null, doneT=null;
+var DOW='日月火水木金土', WDS=['月','火','水','木','金','土','日'];
+var IDLE_MS=120000, DONE_MS=10000;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function loading(on){document.getElementById('loading').className=on?'on':'';busy=on;}
+function run(fn,args,ok,quiet){
+  if(!quiet) loading(true);
+  var r=google.script.run
+    .withSuccessHandler(function(x){if(!quiet)loading(false);ok(x);})
+    .withFailureHandler(function(e){if(quiet)return;loading(false);msg=(e&&e.message)||String(e);render();});
+  r[fn].apply(r,args||[]);
+}
+// 「2026/10/10 23:59」→「10月10日（土）23:59」
+function dt(s){
+  var m=String(s||'').match(/^(\d{4})\/(\d{2})\/(\d{2}) (\d{2}):(\d{2})$/); if(!m) return '';
+  var d=new Date(+m[1],+m[2]-1,+m[3]);
+  return (+m[2])+'月'+(+m[3])+'日（'+DOW[d.getDay()]+'）'+m[4]+':'+m[5];
+}
+function dayOf(ds){ if(!INIT) return null; for(var i=0;i<INIT.days.length;i++) if(INIT.days[i].dstr===ds) return INIT.days[i]; return null; }
+function dshort(ds){var d=dayOf(ds);return d?d.m+'/'+d.d+'（'+DOW[d.dow]+'）':ds;}
+function dlong(ds){var d=dayOf(ds);return d?d.m+'月'+d.d+'日（'+DOW[d.dow]+'）':ds;}
+function selKeys(){return Object.keys(sel).filter(function(k){return !!dayOf(k);}).sort();}
+function symName(s){return s==='有'?'有給':'休み';}
+function symCls(s){return s==='有'?'yu':'off';}
+function msgHTML(){return msg?'<div class="banner red">'+esc(msg)+'</div>':'';}
+
+function render(){
+  var app=document.getElementById('app');
+  if(scr==='names') app.innerHTML=namesHTML();
+  else if(scr==='pin') app.innerHTML=pinHTML();
+  else if(scr==='cal') app.innerHTML=calHTML();
+  else if(scr==='confirm') app.innerHTML=confirmHTML();
+  else if(scr==='done') app.innerHTML=doneHTML();
+  touchIdle();
+}
+function show(s){scr=s;msg='';render();}
+
+// しばらくさわらなかったら、最初の画面にもどす（前の人の画面のまま次の人が使わないように）
+function touchIdle(){
+  clearTimeout(idleT);
+  if(scr==='pin'||scr==='cal'||scr==='confirm') idleT=setTimeout(goNames,IDLE_MS);
+}
+document.addEventListener('pointerdown',touchIdle,true);
+
+/* ---- 1. 名前 ---- */
+function goNames(){
+  clearTimeout(doneT); clearTimeout(idleT);
+  who=''; pin=''; V=null; sel={}; pinErr=''; mode='休';
+  show('names');
+  run('apiInit',[],function(r){INIT=r;if(scr==='names')render();});
+}
+function namesHTML(){
+  if(!INIT) return '<div class="scr">'+msgHTML()+'<p class="sub">読み込んでいます…</p></div>';
+  if(!INIT.ready) return '<div class="scr"><h1 class="title">希望休の受付</h1>'+msgHTML()
+    +'<div class="banner" style="margin-top:20px">まだ受付の準備ができていません。管理者さんに言ってください。</div>'
+    +'<div><button class="btn" onclick="goNames()">もう一度読み込む</button></div></div>';
+  var h='<div class="scr"><div class="top"><div><h1 class="title">希望休の受付</h1><div class="sub">期間　<b>'+esc(INIT.label)+'</b></div></div>'
+    +'<div class="sub" style="text-align:right">'+(INIT.open
+      ?(INIT.deadline?'締め切り　<b>'+esc(dt(INIT.deadline))+'</b>':'受付中')
+      :'<b style="color:#8C1D18">受付は締め切りました</b><br>自分の希望休を見ることはできます')+'</div></div>';
+  h+=msgHTML();
+  h+='<div class="sub" style="margin-bottom:10px">自分の名前を押してください</div><div class="names">';
+  INIT.staff.forEach(function(p,i){
+    h+='<button class="nb" onclick="pickName('+i+')"><span>'+esc(p.name)+'</span>'
+      +(p.sent?'<small class="ok">✓ 送った</small>':'')+(p.ext?'<small class="ex">延長中</small>':'')+'</button>';
+  });
+  h+='</div><div class="foot"><button class="btn quiet" onclick="goNames()">最新にする</button></div></div>';
+  return h;
+}
+function pickName(i){
+  var p=INIT&&INIT.staff[i]; if(!p) return;
+  who=p.name; pin=''; pinErr='';
+  show('pin');
+}
+
+/* ---- 2. 番号 ---- */
+function pinHTML(){
+  var keys=['1','2','3','4','5','6','7','8','9','C','0','B'];
+  var h='<div class="scr"><div class="top"><div><h1 class="title">'+esc(who)+' さん</h1><div class="sub">番号（4けた）を押してください</div></div>'
+    +'<button class="btn quiet" onclick="goNames()">名前をえらびなおす</button></div>'+msgHTML();
+  h+='<div class="pinwrap"><div class="dots" aria-label="'+pin.length+'けた入っています">';
+  for(var i=0;i<4;i++) h+='<span class="dot'+(i<pin.length?' on':'')+'"></span>';
+  h+='</div><div class="err" role="alert">'+esc(pinErr)+'</div><div class="keys">';
+  keys.forEach(function(k){
+    var lab=k==='C'?'ぜんぶ消す':(k==='B'?'1つ消す':k);
+    h+='<button class="key'+(k==='C'||k==='B'?' small':'')+'" onclick="key(\''+k+'\')">'+lab+'</button>';
+  });
+  h+='</div></div></div>';
+  return h;
+}
+function key(k){
+  if(busy) return;
+  pinErr='';
+  if(k==='C') pin='';
+  else if(k==='B') pin=pin.slice(0,-1);
+  else if(pin.length<4) pin+=k;
+  render();
+  if(pin.length===4) login();
+}
+function login(){
+  run('apiLogin',[who,pin],function(r){
+    if(!r.ok){pinErr=r.why;pin='';render();return;}
+    V=r; sel={}; Object.keys(r.marks||{}).forEach(function(k){sel[k]=r.marks[k];});
+    mode='休';
+    show('cal');
+  });
+}
+
+/* ---- 3. カレンダー ---- */
+function calHTML(){
+  var days=INIT.days, ro=!V.can, cells=[], i;
+  var pad=(days[0].dow+6)%7;
+  for(i=0;i<pad;i++) cells.push(null);
+  days.forEach(function(d){cells.push(d);});
+  while(cells.length%7) cells.push(null);
+  var weeks=cells.length/7;
+  var h='<div class="scr"><div class="top"><div><h1 class="title">'+esc(who)+' さんの希望休</h1><div class="sub">期間　<b>'+esc(INIT.label)+'</b></div></div>'
+    +'<div class="sub" style="text-align:right">'
+    +(V.can&&V.until?(V.ext?'延長　':'締め切り　')+'<b>'+esc(dt(V.until))+'</b>':'')
+    +(V.sent?'<br>前に送った日時　'+esc(V.sent)+'（直して送り直せます）':'')+'</div></div>';
+  h+=msgHTML();
+  if(ro) h+='<div class="banner red">'+esc(V.why)+'。見ることだけできます。変えたいときは管理者さんに言ってください。</div>';
+  h+='<div class="calwrap"><div class="cal" style="grid-template-rows:28px repeat('+weeks+',minmax(0,1fr))">';
+  WDS.forEach(function(w,j){h+='<div class="wd" style="color:'+(j===6?'var(--red)':(j===5?'#1F4E8C':'var(--ink)'))+'">'+w+'</div>';});
+  var first=true;
+  cells.forEach(function(d){
+    if(!d){h+='<div class="day blank" aria-hidden="true"></div>';return;}
+    var s=sel[d.dstr]||'';
+    var cls=(d.dow===0||d.hol)?' sun':(d.dow===6?' sat':'');
+    if(s) cls+=' '+symCls(s);
+    if(ro) cls+=' ro';
+    var mo=first||d.d===1; first=false;
+    var n=(V.others||{})[d.dstr]||0;
+    var small=s?symName(s):(n?'ほか'+n+'人':(d.hol?'祝日':''));
+    h+='<button class="day'+cls+'" onclick="tap(\''+d.dstr+'\')" aria-label="'+esc(dlong(d.dstr)+(s?' '+symName(s):''))+'">'
+      +'<span class="dn'+(mo?' mo':'')+'">'+(mo?d.m+'/'+d.d:d.d)+'</span><small>'+esc(small)+'</small></button>';
+  });
+  h+='</div><div class="side">';
+  var ks=selKeys();
+  if(!ro){
+    h+='<div class="panel"><div class="sub" style="margin-bottom:8px">押すと入るもの</div><div class="mode">'
+      +'<button class="m-off'+(mode==='休'?' on':'')+'" aria-pressed="'+(mode==='休')+'" onclick="setMode(\'休\')">休み</button>'
+      +'<button class="m-yu'+(mode==='有'?' on':'')+'" aria-pressed="'+(mode==='有')+'" onclick="setMode(\'有\')">有給</button></div>'
+      +'<div class="sub" style="margin-top:8px;font-size:14px">同じ日をもう一度押すと消えます</div></div>';
+  }
+  h+='<div class="panel picked"><b>えらんだ日（'+ks.length+'日）</b>'
+    +(ks.length?ks.map(function(k){return '<div class="pr"><span>'+esc(dshort(k))+'</span><span class="tag '+symCls(sel[k])+'">'+symName(sel[k])+'</span></div>';}).join('')
+      :'<div class="sub">まだありません</div>')+'</div>';
+  if(ro) h+='<button class="btn big" onclick="goNames()">名前の画面にもどる</button>';
+  else h+='<button class="btn primary big" onclick="show(\'confirm\')">確認へ進む</button><button class="btn" onclick="goNames()">やめる（送らない）</button>';
+  h+='</div></div></div>';
+  return h;
+}
+function setMode(m){mode=m;render();}
+function tap(ds){
+  if(!V||!V.can) return;
+  if(sel[ds]===mode) delete sel[ds]; else sel[ds]=mode;
+  render();
+}
+
+/* ---- 4. 確認 ---- */
+function confirmHTML(){
+  var ks=selKeys();
+  var h='<div class="scr"><div class="top"><div><h1 class="title">'+esc(who)+' さん　これで送りますか？</h1><div class="sub">期間　<b>'+esc(INIT.label)+'</b></div></div></div>'+msgHTML();
+  h+='<div class="panel conf">'+(ks.length
+    ?ks.map(function(k){return '<div class="crow"><span>'+esc(dlong(k))+'</span><span class="tag '+symCls(sel[k])+'">'+symName(sel[k])+'</span></div>';}).join('')
+    :'<div class="crow"><span>希望休はありません</span></div>')+'</div>';
+  h+='<div class="bar"><button class="btn big" onclick="show(\'cal\')">もどって直す</button><button class="btn primary big" onclick="send()">この内容で送る</button></div></div>';
+  return h;
+}
+function send(){
+  if(busy) return;
+  run('apiSubmit',[who,pin,sel],function(r){
+    if(!r.ok){msg=r.why;render();return;}
+    sentAt=r.sent;
+    show('done');
+    doneT=setTimeout(goNames,DONE_MS);
+  });
+}
+
+/* ---- 5. 送りました ---- */
+function doneHTML(){
+  var n=selKeys().length;
+  return '<div class="scr"><div class="done"><div class="mark" aria-hidden="true">✓</div><h1 class="title">送りました</h1>'
+    +'<div class="sub" style="font-size:20px">'+esc(who)+' さん　希望休 '+n+'日（'+esc(sentAt)+'）</div>'
+    +'<div class="sub">10秒で最初の画面にもどります</div>'
+    +'<button class="btn big" onclick="goNames()">すぐもどる</button></div></div>';
+}
+
+// 名前の画面のときは、1分ごとに「送った」や締め切りを新しくする
+setInterval(function(){
+  if(scr==='names'&&!busy) run('apiInit',[],function(r){INIT=r;if(scr==='names')render();},true);
+},60000);
+
+goNames();
+</script>
+</body>
+</html>
